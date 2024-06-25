@@ -1,8 +1,8 @@
 const express = require("express");
-import {z} from 'zod';
-import { User } from '../db';
-import JWT_SECRET from '../config';
-import { authMiddleware } from '../middleware';
+const z=require('zod');
+const { Account, User } =require( '../db');
+const JWT_SECRET =require( '../config');
+const { authMiddleware } =require( '../middleware');
 const jwt=require('jsonwebtoken')
 
 
@@ -48,6 +48,13 @@ router.post("/signup",async(req,res)=>{
         firstName:firstName,
         lastName:lastName,
         password:password
+    })
+
+    console.log(newUser);
+
+    await Account.create({
+        userID:newUser._id,
+        balance:(Math.random()+1)*10000
     })
 
     const token=jwt.sign({
@@ -102,23 +109,22 @@ router.post('/signin',async(req,res)=>{
 
 })
 
-const updateScheme=s.object({
+const updateScheme=z.object({
     password:z.string().optional(),
     firstName:z.string().optional(),
     lastName:z.string().optional()
 })
 
-User.put('/',authMiddleware,async(req,res)=>{
+router.put('/',authMiddleware,async(req,res)=>{
     const userID=req.userID;
-    const password=req.body.password;
-    const firstName=req.body.firstName;
-    const lastName=req.body.lastName;
 
     if(!updateScheme.safeParse(req.body).success){
         return res.status(411).json({
             message:"Error while updating information"
         })
     }
+
+    // console.log(req.body);
 
     await User.updateOne({
         _id:userID
@@ -135,12 +141,21 @@ router.get('/bulk',async(req,res)=>{
     const filterParameter=req.query.filter||'';
 
     const data=await User.find({
-        $or:[{firstName:{"$regex":filterParameter}},{lastName:{"$regex":filterParameter}}]},'username firstName lastName _id')
-    console.log("Search Results\n", data);
+        $or:[
+                {
+                    firstName:{$regex:new RegExp(filterParameter,'i')}
+                },
+                {
+                    lastName:{"$regex":new RegExp(filterParameter,'i')}
+                }
+            ]
+        },
+        'username firstName lastName _id')
+    // console.log("Search Results\n", data);
     res.json({
         users:data
     })
 })
 
 
-export default router;
+module.exports=router

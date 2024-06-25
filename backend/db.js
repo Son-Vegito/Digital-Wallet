@@ -1,5 +1,4 @@
 const mongoose=require('mongoose');
-const { Schema } = require('zod');
 
 mongoose.connect('mongodb+srv://admin:admin@cluster0.1lyghhg.mongodb.net/paytm')
 

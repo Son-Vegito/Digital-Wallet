@@ -6,7 +6,9 @@ function authMiddleware(req,res,next){
     const authHeader=req.headers.authorization;
 
     if(!authHeader||!authHeader.startsWith('Bearer ')){
-        return res.sendStatus(403);
+        return res.status(403).json({
+            message:"User unauthorized"
+        });
     }
 
     const token=authHeader.split(' ')[1];
@@ -16,7 +18,9 @@ function authMiddleware(req,res,next){
         req.userID=decoded.userID;
         next();
     }catch(err){
-        return res.sendStatus(403);
+        return res.status(403).json({
+            message:"User unauthorized"
+        });
     }
 }
 
