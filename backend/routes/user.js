@@ -137,9 +137,9 @@ router.put('/',authMiddleware,async(req,res)=>{
 
 })
 
-router.get('/bulk',async(req,res)=>{
+router.get('/bulk',authMiddleware,async(req,res)=>{
     const filterParameter=req.query.filter||'';
-
+    const userID=req.userID;
     const data=await User.find({
         $or:[
                 {
@@ -153,7 +153,7 @@ router.get('/bulk',async(req,res)=>{
         'username firstName lastName _id')
     // console.log("Search Results\n", data);
     res.json({
-        users:data
+        users:data.filter((user)=>user._id!=userID)
     })
 })
 

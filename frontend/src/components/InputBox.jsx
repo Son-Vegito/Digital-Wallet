@@ -6,7 +6,7 @@ function InputBox({title,onChange}) {
             <div className='text-md font-semibold pl-1 pt-2'>
                 {title}
             </div>
-            <input onChange={onChange} className='w-full p-2 h-8 rounded-md border-gray-400 border'/>
+            <input onChange={onChange} className='w-full p-2 h-8 rounded-md border-neutral-400 border'/>
         </div>
     )
 }
